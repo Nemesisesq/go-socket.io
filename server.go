@@ -48,7 +48,7 @@ func (s *Server) OnDisconnect(nsp string, f func(Conn, string)) {
 }
 
 // OnError set a handler function f to handle error for namespace nsp.
-func (s *Server) OnError(nsp string, f func(error)) {
+func (s *Server) OnError(nsp string, f func(Conn, error)) {
 	h := s.getNamespace(nsp)
 	h.OnError(f)
 }
@@ -71,11 +71,11 @@ func (s *Server) Serve() error {
 }
 
 func (s *Server) serveConn(c engineio.Conn) {
-	_, err := newConn(c, s.handlers)
+	co, err := newConn(c, s.handlers)
 	if err != nil {
 		root := s.handlers[""]
 		if root != nil && root.onError != nil {
-			root.onError(err)
+			root.onError(newNamespaceConn(co, ""), err)
 		}
 		return
 	}

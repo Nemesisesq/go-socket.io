@@ -26,7 +26,7 @@ func TestNamespaceHandler(t *testing.T) {
 	})
 
 	var onerror error
-	h.OnError(func(err error) {
+	h.OnError(func(con Conn, err error) {
 		onerror = err
 	})
 
